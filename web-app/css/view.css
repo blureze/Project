@@ -1,0 +1,145 @@
+body {
+    padding-top: 3em;
+}
+
+// Class
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+// Usage as a mixin
+.element {
+    .center-block();
+}
+
+.system {
+	width: 100%;
+	height:520px;
+    margin-left: auto;
+    margin-right: auto;
+   /* border: 1px solid;
+    border-color: yellow;*/
+}
+
+/*Chat Part
+******************/
+.page {
+	width: 80%;
+    padding: 20px 15px 10px 15px;
+    border: 1px solid;
+    border-color: black;
+    margin: 0 auto;
+	/*float: right; margin-right: 5%;*/
+}
+
+.mainPage {
+	width: 100%;
+	height: 370px;
+    margin-left: auto;
+    margin-right: auto;
+    /*border: 1px solid;
+    border-color: yellow;*/
+}
+
+.picHistory {
+	width: 10%;
+	height: 370px;
+	border: 1px solid;
+	border-color: gray;
+	float: left;
+}
+
+.message {
+	width: 90%;
+	height: 370px;
+	border: 1px solid;
+	border-color: gray;
+	float: right;
+	text-align: left;	
+}
+
+#controlBox {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	clear: both;
+}
+
+#indicator {
+	width:15px;
+	height:15px;
+	border-radius:50%;
+	background:#65D97D;
+	float:right;
+	margin-top:5px;
+	margin-right:5px;
+}
+
+.repairStart {
+	width: 40%;
+	float: right;
+	margin-right: 5%;	
+}
+
+/*Repair Part
+****************************/
+.repairBox {
+	width: 50%;
+	height: 520px;
+	/*border: 1px solid;
+	border-color: blue;*/		
+	float: left;
+	margin-left: 5%;
+	display: none;
+}
+
+.myCanvas {
+	width: 100%;
+	height: 100%;
+	border:1px solid;
+	border-color: blue;
+}
+
+/*Tools*/
+.toolBox {
+	height: 10%;
+	border: 1px solid;
+	border-color: black;		
+}
+
+.tools {
+	margin-top: 1%;
+}
+
+#circleTool {
+	width:20px;
+	height:20px;
+	border-radius:50%;
+	border: 1px solid;
+	border-color: black;
+}
+
+#recTool {
+	width: 25px;
+	height: 20px;
+	border: 1px solid;
+	border-color: black;	
+}
+
+#lineTool, #translationTool{
+	width: 20px;
+	height: 20px;
+}
+
+#textTool {
+	width: 20px;
+	height: 20px;
+	font-size: small;
+}
+
+.showPics {
+	height: 90%;
+	border: 1px solid;
+	border-color: black;
+}

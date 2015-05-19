@@ -25,12 +25,33 @@ class ChatController {
 	}	
 	
 	def signFlag(int flag) {
-		new Sign(signFlag:flag).save()
+		//println "ori = " + flag
+
+			/*def s = Sign.last()
+			s.signFlag = flag
+			s.save()			
+			println "s = " + s.signFlag
+			println "update: " + Sign.last().signFlag*/
+			
+			new Sign(signFlag:flag).save()
 		render "<script>changeSign()</script>"		
 	}
 	
 	def changeSign() {
-		def signFlag = Sign.last()
-		[signFlag:signFlag]
+
+		if(Sign.count() == 0) {
+			def flag = 0
+			new Sign(signFlag:flag).save()
+			//println "count = " + Sign.count()
+			[flag: flag]
+		}
+		else {
+			
+			def flag = Sign.last()
+			//println "flag = " + flag.signFlag
+			[flag: flag]
+		}
+		
+		
 	}
 }

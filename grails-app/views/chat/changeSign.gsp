@@ -2,20 +2,13 @@
 <head>
 </head>
 <body>
+	<div class = "circle" id = "indicator"> </div>
 	<script>
-		if(${signFlag.signFlag} == 0) {
-			jQuery('<div/>', {
-				id: 'indicator',
-				class: 'circle'
-			}).appendTo('#tmp');
+		if(${flag.signFlag} == 0) {
+			document.getElementById("indicator").style.backgroundColor = "#65D97D";
 		}
 		else {
-			jQuery('<div/>', {
-				id: 'indicator',
-				class: 'circle',
-			}).css (
-				'background-color','red'
-			).appendTo('#tmp');			
+			document.getElementById("indicator").style.backgroundColor = "red";
 		}
 	</script>
 </body>

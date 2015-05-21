@@ -24,7 +24,6 @@
 
 		<!-- Custom styles for this template -->
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'view.css')}" type="text/css">
-
 	</head>
 
 	<body>
@@ -35,27 +34,133 @@
 					<div class = "toolBox">
 						<div class = "tools">
 							<div class="btn-group" role="group" aria-label="...">
-							  <button type="button" class="btn btn-default" id = "circle">
+							  <button type="button" class="btn btn-default" id = "circle" onclick="set('circle')">
 								<div id = "circleTool"></div>
 							  </button>
-							  <button type="button" class="btn btn-default" id = "rec">
+							  <button type="button" class="btn btn-default" id = "rec" onclick="set('rect')">
 								<div id = "recTool"></div>
 							  </button>
-							  <button type="button" class="btn btn-default" id = "line">
+							  <button type="button" class="btn btn-default" id = "line"  onclick="set('line')">
 								<div id = "lineTool">
 									<g:img dir="images" file="line.png" width="100%"/>
 								</div>
 							  </button>
-							  <button type="button" class="btn btn-default" id = "text">
+							  <button type="button" class="btn btn-default" id = "text"  onclick="set('text')">
 								<div id = "textTool">T</div>
 							  </button>										  
 							</div>
 						</div><!--tools-->
 					</div><!--toolBox-->
 					<div class = "showPics">
-						<canvas id="myCanvas" class = "myCanvas">
-						<p class="lead">Repair
-						</canvas>						
+						<script type="application/processing">
+							int sX, sY, eX, eY;    // s: start; e: end
+							int width, height;
+							ArrayList xPos, yPos;
+							ArrayList xOffsetList, yOffsetList;
+							ArrayList shape;
+							boolean drawing = false;
+							boolean locked = false;
+							float xOffset = 0.0;
+							float yOffset = 0.0;
+							String mode;
+							int i;
+
+							// Setup the Processing Canvas
+							void setup(){
+								//size( $("#myCanvas").width(), $("myCanvas").height() );
+								size(500,500);
+								strokeWeight( 5 );
+								stroke(0);  
+								//textSize(24);
+								smooth();
+								
+								xPos = new ArrayList();
+								yPos = new ArrayList();
+								xOffsetList = new ArrayList();
+								yOffsetList = new ArrayList();
+								shape = new ArrayList(); 
+									
+								noLoop();								
+							}
+
+							// Main draw loop
+							void draw(){
+								background( 255 );
+								// Set stroke-color white								  
+								noFill();
+								
+								for(i = 0; i < xPos.size(); i++) {
+									if(shape.get(i) == "circle")
+										ellipse(xPos.get(i), yPos.get(i), xOffsetList.get(i), yOffsetList.get(i));
+									else if(shape.get(i) == "rect")
+										rect(xPos.get(i), yPos.get(i), xOffsetList.get(i), yOffsetList.get(i));
+										
+								}
+							
+								// Draw
+								if(drawing && mode == "circle") {
+									ellipse(sX, sY, xOffset, yOffset);
+								}        
+								else if(drawing && mode == "rect") {
+									rect(sX, sY, xOffset, yOffset);
+								}       
+								else if(drawing && mode == "line") {
+									line(pmouseX, pmouseY, mouseX, mouseY);
+								}				
+								else if(drawing && mode == "text") {
+								  text("word", 15, 30);
+								}								
+							}
+
+							void mousePressed(){
+								if(locked){
+									drawing = true;
+									loop();
+									sX = mouseX;  
+									sY = mouseY; 								
+								} 							
+							} 
+							
+							// Set circle's next destination
+							void mouseDragged(){
+								if(locked && drawing){
+									xOffset = mouseX- sX;
+									yOffset = mouseY- sY;				
+								}
+							}
+						  
+							void mouseReleased(){
+								if(locked){
+									drawing = false;
+									xPos.add(sX);
+									yPos.add(sY);        
+									xOffsetList.add(xOffset);
+									yOffsetList.add(yOffset);
+									
+									xOffset = 0.0;
+									yOffset = 0.0;
+									if(mode == "circle"){
+									  shape.add("circle");
+									}
+									else if (mode == "rect"){
+									  shape.add("rect");
+									}
+									else if(mode == "line"){
+										shape.add("line");
+									}
+									else if(mode == "text"){
+										shape.add("text");
+									}									
+									noLoop();				
+								}
+							}
+							
+							void set(shapeMode) {
+								mode = shapeMode;
+								locked = true;
+							}							
+						</script>
+						<canvas id = "myCanvas" class = "myCanvas"></canvas>				
 					</div>
 				</div>				
 				
@@ -71,7 +176,6 @@
 								<div id="temp"></div>
 								<div id="chatMessages"></div>						
 							</div>
-							<!--<div class="circle" id="indicator"></div>-->
 							<div id = "tmp"></div>
 						</div>
 					</div> <!--mainPage-->
@@ -95,12 +199,7 @@
 		<!-- function
 		================================================== -->	
 		<script>
-			var flag = 0;
-			var canvas = document.getElementById("myCanvas"); // 取得物件
-			var ctx = canvas.getContext("2d"); // 取得繪圖環境
-			var rect = canvas.getBoundingClientRect();
-			var drawing = false, oriX, oriY, mx, my, drawMode = '';			
-			
+			var flag = 0;		
 			$(document).ready(function() {
 				$('#repairCheckbox').on('switchChange.bootstrapSwitch', function(event, checked) {
 				
@@ -120,88 +219,6 @@
 				}
 				});			
 			});			
-			
-			/*Canvas*/
-			document.getElementById('circle').onclick = function(){drawMode='circle'};		
-			document.getElementById('rec').onclick = function(){drawMode='rec'};		
-			document.getElementById('line').onclick = function(){drawMode='line'};		
-			document.getElementById('text').onclick = function(){drawMode='text'};
-			
-			function drawCircle(x, y, r){
-				ctx.beginPath();
-				ctx.strokeStyle = "black";
-				ctx.arc(x, y, r, 0, Math.PI*2, true);
-				ctx.stroke();
-			}
-					
-			function dist(x1,y1,x2,y2) {
-				return Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
-			}
-			
-			function drawRec(x, y, w, h) {
-				ctx.beginPath();
-				ctx.strokeStyle = "black";
-				ctx.rect(x, y, w, h);
-				ctx.stroke();		
-			}
-			
-			function drawLine(sx, sy, ex, ey) {
-				ctx.beginPath();
-				ctx.moveTo(sx, sy);
-				ctx.lineTo(ex, ey);
-				ctx.stroke();
-			}
-			
-			canvas.onmousedown = function(ev){	
-				mx = event.clientX - rect.left;
-				my = event.clientY - rect.top;
-
-				oldImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
-				oriX = mx;
-				oriY = my;			
-				
-				drawing = true;
-			}
-					 
-			canvas.onmousemove = function(ev){
-				mx = event.clientX - rect.left;
-				my = event.clientY - rect.top;	
-				
-				if(drawing) {
-					ctx.clearRect(0,0,canvas.width,canvas.height);
-					ctx.putImageData(oldImg,0,0);
-					
-					if(drawMode == "circle"){
-						// oriX and oriY are the coordinates of the center						
-						drawCircle(oriX, oriY, dist(oriX,oriY,mx,my));
-					}
-					else if(drawMode == "rec") {
-						drawRec(oriX, oriY, mx-oriX, my-oriY);
-					}
-					else if(drawMode == "line") {
-						drawLine(oriX, oriY, mx, my);
-					}
-					else if(drawMode == "text") {
-					alert("rec");
-					}
-				}
-			}
-					 
-			canvas.onmouseup = function(){			
-				mx = event.clientX - rect.left;
-				my = event.clientY - rect.top;
-						
-				if(drawMode == "circle")
-					drawCircle(oriX, oriY, dist(oriX,oriY,mx,my));				
-				else if(drawMode == "rec")
-					drawRec(oriX, oriY, mx-oriX, my-oriY);
-				else if(drawMode == "line")
-					drawLine(oriX, oriY, mx, my);
-				else if(drawMode == "text")
-				alert("rec");
-				
-				drawing = false;			
-			}
 			
 			function signFlag() {				
 				if(flag == 0) {		// ready to repair
@@ -248,7 +265,16 @@
 				changeSign();
 				setTimeout('updateSign()', 2000);
 			}
-		    pollMessages();
+		    
+			function set(shape) {
+				var pjs = Processing.getInstanceById("myCanvas");
+				var width = document.getElementById('myCanvas').offsetWidth;
+				var height = document.getElementById('myCanvas').offsetHeight;
+				pjs.set(shape);
+
+			}
+			
+			pollMessages();
 			updateSign();
 		</script>
 		
@@ -260,5 +286,6 @@
 		<g:javascript src="highlight.js"/>
 		<g:javascript src="bootstrap-switch.js"/>
 		<g:javascript src="main.js"/>
+		<g:javascript src="processing.js"/>
 	</body>
 </html>
